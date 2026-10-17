@@ -35,3 +35,32 @@ FROM orders AS o
 JOIN order_items AS oi
     ON o.order_id = oi.order_id
 WHERE o.order_status = 'Delivered';
+
+-- ques 6. Calculate delivered revenue by product category, highest first.
+SELECT
+    p.category,
+    SUM(oi.quantity * oi.unit_price) AS total_revenue
+FROM order_items AS oi
+JOIN products AS p
+    ON oi.product_id = p.product_id
+JOIN orders AS o
+    ON oi.order_id = o.order_id
+WHERE o.order_status = 'Delivered'
+GROUP BY p.category
+ORDER BY total_revenue DESC;
+
+-- ques 7. Count distinct customers who placed at least one delivered order.
+SELECT COUNT(DISTINCT customer_id) AS unique_customers
+FROM orders
+WHERE order_status = 'Delivered';
+
+-- ques 8. For each order, calculate its total order value. Show only delivered orders, highest value first.
+SELECT
+    oi.order_id,
+    SUM(oi.quantity * oi.unit_price) AS revenue
+FROM order_items AS oi
+JOIN orders AS o
+    ON oi.order_id = o.order_id
+WHERE o.order_status = 'Delivered'
+GROUP BY oi.order_id
+ORDER BY revenue DESC;
