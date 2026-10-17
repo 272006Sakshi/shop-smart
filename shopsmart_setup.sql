@@ -1,6 +1,4 @@
-
--- ShopSmart SQL Practice Dataset (PostgreSQL)
--- Run this script in pgAdmin Query Tool or psql.
+-- Run the script in pgAdmin Query Tool
 -- It creates four tables and inserts a small, fictional dataset.
 
 DROP TABLE IF EXISTS order_items;
@@ -116,7 +114,7 @@ INSERT INTO order_items VALUES
 (30, 1020, 103, 1, 1599);
 
 
--- Quick validation: expected row counts are customers=12, products=8, orders=20, order_items=30.
+-- expected row counts are customers=12, products=8, orders=20, order_items=30.
 SELECT 'customers' AS table_name, COUNT(*) AS row_count FROM customers
 UNION ALL SELECT 'products', COUNT(*) FROM products
 UNION ALL SELECT 'orders', COUNT(*) FROM orders
