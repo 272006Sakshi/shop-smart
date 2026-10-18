@@ -64,3 +64,25 @@ JOIN orders AS o
 WHERE o.order_status = 'Delivered'
 GROUP BY oi.order_id
 ORDER BY revenue DESC;
+
+-- Ques 9. Classify each order as `Completed` if delivered, `In Progress` if shipped or processing, and `Not Completed` otherwise. Return order ID, status, and classification.
+SELECT order_id,
+    order_status,
+    CASE
+        WHEN order_status = 'Delivered' THEN 'Completed'
+        WHEN order_status IN ('Shipped', 'Processing') THEN 'In Progress'
+        ELSE 'Not Completed'
+    END AS classification
+FROM orders;
+
+-- ques 10. Show every customer's name and city, along with their number of delivered orders—including customers who have zero delivered orders.
+SELECT
+    c.customer_name,
+    c.city,
+    COUNT(o.order_id) AS delivered_orders
+FROM customers AS c
+LEFT JOIN orders AS o
+    ON c.customer_id = o.customer_id
+    AND o.order_status = 'Delivered'
+GROUP BY c.customer_id, c.customer_name, c.city
+ORDER BY delivered_orders DESC;
