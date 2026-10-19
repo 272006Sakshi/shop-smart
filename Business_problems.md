@@ -8,3 +8,8 @@
 8. For each order, calculate its total order value. Show only delivered orders, highest value first.
 9. Classify each order as `Completed` if delivered, `In Progress` if shipped or processing, and `Not Completed` otherwise. Return order ID, status, and classification.
 10. For each customer, show their name, city, and number of delivered orders. Include customers with zero delivered orders.
+11. Find the top 3 products by delivered revenue.
+12. Find customers who have placed more than one delivered order.
+13. Calculate average delivered order value. Count each order once.
+14. Find each city's delivered revenue, highest first.
+15. Show products that have no delivered sales.
