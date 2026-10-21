@@ -88,21 +88,39 @@ GROUP BY c.customer_id, c.customer_name, c.city
 ORDER BY delivered_orders DESC;
 
 -- ques 11. Find the top 3 products by delivered revenue.
-SELECT p.product_name, SUM(oi.quantity*p.unit_price) AS revenue
+SELECT p.product_name, 
+    SUM(oi.quantity*p.unit_price) AS revenue
 FROM products AS p
-JOIN order_items AS oi ON p.product_id = oi.product_id
-JOIN orders AS o ON oi.order_id = o.order_id
+JOIN order_items AS oi 
+    ON p.product_id = oi.product_id
+JOIN orders AS o 
+    ON oi.order_id = o.order_id
 WHERE o.order_status='Delivered'
-GROUP BY  p.product_id, p.product_name
+GROUP BY  p.product_id, p.product_name 
 ORDER BY revenue DESC
 LIMIT 3;
 
 -- ques 12. Find customers who have placed more than one delivered order.
 SELECT c.customer_id, c.customer_name, 
-    COUNT(o.order_id) AS delivered_order FROM customers AS c
-JOIN orders AS o
-ON c.customer_id=o.customer_id 
+    COUNT(o.order_id) AS delivered_order 
+FROM customers AS c
+JOIN orders AS o 
+    ON c.customer_id=o.customer_id 
 WHERE o.order_status='Delivered'
-GROUP BY c.customer_id, c.customer_name
-HAVING COUNT(o.customer_id)>1
+GROUP BY c.customer_id, c.customer_name 
+    HAVING COUNT(o.customer_id)>1
 ORDER BY delivered_order DESC;
+
+-- ques 13. Calculate average delivered order value. Count each order once.
+SELECT ROUND(AVG(order_value),2) AS average_order_value
+FROM (
+    SELECT
+        oi.order_id,
+        SUM(oi.quantity * oi.unit_price) AS order_value
+    FROM order_items AS oi
+    JOIN orders AS o
+        ON oi.order_id = o.order_id
+    WHERE o.order_status = 'Delivered'
+    GROUP BY oi.order_id
+) AS order_totals;
+
