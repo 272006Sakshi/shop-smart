@@ -20,3 +20,9 @@
 17. Use a CTE to calculate monthly delivered revenue.
 18. Use a CTE to calculate revenue per product, then rank products within each category using `DENSE_RANK()` or `ROW_NUMBER()`.
 19. Use a CTE to calculate each customer's delivered order count, then label customers as `Repeat` (2+ delivered orders) or `One-time/No delivered orders`.
+
+    
+20. What percentage of all customers have at least one delivered order?
+21. Which delivered orders contain more than one distinct product?
+22. Compare delivered revenue with revenue from all order statuses. Explain why the two figures differ.
+23. Find the second-highest product by delivered revenue without hardcoding the product name.
