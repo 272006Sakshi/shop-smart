@@ -222,4 +222,57 @@ LEFT JOIN delivered_order AS d
 ORDER BY delivered_count DESC;
 
 
+-- 20. What percentage of all customers have at least one delivered order?
+SELECT
+    COUNT(DISTINCT o.customer_id) * 100.0
+    / COUNT(c.customer_id) AS percentage
+FROM customers AS c
+JOIN orders AS o
+    ON c.customer_id = o.customer_id
+WHERE o.order_status = 'Delivered';
+
+-- 21. Which delivered orders contain more than one distinct product?
+
+SELECT DISTINCT oi.order_id
+FROM order_items AS oi 
+JOIN orders AS o
+ON o.order_id=oi.order_id
+WHERE o.order_status = 'Delivered'
+GROUP BY oi.order_id
+HAVING COUNT(DISTINCT oi.product_id) > 1;
+
+-- 22. Compare delivered revenue with revenue from all order statuses. Explain why the two figures differ.
+SELECT * FROM products;
+SELECT * FROM orders;
+SELECT * FROM customers;
+SELECT * FROM order_items;
+
+--delivered revenue
+SELECT SUM(oi.quantity*oi.unit_price) AS delivered_revenue
+FROM order_items AS oi
+JOIN orders AS o 
+ON oi.order_id=o.order_id
+WHERE order_status='Delivered'
+
+--revenue from all order statuses
+SELECT SUM(oi.quantity*oi.unit_price) AS revenue
+FROM order_items AS oi
+JOIN orders AS o 
+ON oi.order_id=o.order_id
+
+-- The first query counts revenue only from Delivered orders, whereas the second includes Delivered, Cancelled, Shipped, Returned, and Processing orders.
+-- Therefore, the second figure will generally be higher because it includes orders that aren't completed sales. The exact difference depends on the data.
+
+-- 23. Find the second-highest product by delivered revenue without hardcoding the product name.
+SELECT p.product_name, p.product_id, SUM(oi.quantity*oi.unit_price) AS delivered_revenue
+FROM order_items AS oi
+JOIN orders AS o 
+ON oi.order_id=o.order_id
+JOIN products AS p
+ON oi.product_id=p.product_id
+WHERE order_status='Delivered'
+GROUP BY p.product_name, p.product_id
+ORDER BY delivered_revenue DESC
+LIMIT 1
+OFFSET 1;
 
