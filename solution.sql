@@ -124,3 +124,102 @@ FROM (
     GROUP BY oi.order_id
 ) AS order_totals;
 
+
+-- ques 14. Find each city's delivered revenue, highest first.
+
+SELECT c.city, SUM(oi.quantity*oi.unit_price) AS revenue
+FROM customers AS c
+join orders AS o
+ON c.customer_id=o.customer_id
+JOIN order_items oi
+ON oi.order_id=o.order_id
+WHERE o.order_status='Delivered'
+GROUP BY c.city
+ORDER BY revenue DESC;
+
+-- Ques 15. Show products that have no delivered sales.
+SELECT p.product_name
+FROM products AS p
+LEFT JOIN order_items AS oi
+    ON p.product_id = oi.product_id
+LEFT JOIN orders AS o
+    ON oi.order_id = o.order_id
+    AND o.order_status = 'Delivered'
+WHERE o.order_id IS NULL;
+
+
+-- CTE
+-- ques 16. Use a CTE to calculate delivered revenue per order, then return orders worth more than ₹5,000.
+with delivered_order_revenue AS(
+    SELECT oi.order_id, SUM(oi.quantity*oi.unit_price) AS revenue
+	FROM order_items AS oi
+	JOIN orders AS o 
+	ON oi.order_id = o.order_id
+	WHERE o.order_status='Delivered'
+	GROUP BY oi.order_id
+) 
+SELECT order_id FROM delivered_order_revenue
+WHERE revenue>5000
+
+-- Ques 17. Use a CTE to calculate monthly delivered revenue.
+SELECT
+    DATE_TRUNC('month', o.order_date) AS revenue_month,
+    SUM(oi.quantity * oi.unit_price) AS revenue
+FROM order_items AS oi
+JOIN orders AS o
+    ON oi.order_id = o.order_id
+WHERE o.order_status = 'Delivered'
+GROUP BY DATE_TRUNC('month', o.order_date)
+ORDER BY revenue_month ASC;
+
+-- ques 18. Use a CTE to calculate revenue per product, then rank products within each category using `DENSE_RANK()` or `ROW_NUMBER()`.
+WITH product_revenue AS (
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.category,
+        SUM(oi.quantity * oi.unit_price) AS revenue
+    FROM products AS p
+    JOIN order_items AS oi
+        ON p.product_id = oi.product_id
+    JOIN orders AS o
+        ON oi.order_id = o.order_id
+    WHERE o.order_status = 'Delivered'
+    GROUP BY p.product_id, p.product_name, p.category
+)
+SELECT
+    product_name,
+    category,
+    revenue,
+    ROW_NUMBER() OVER (
+        PARTITION BY category
+        ORDER BY revenue DESC
+    ) AS product_rank
+FROM product_revenue
+ORDER BY category, product_rank;
+
+-- ques 19. Use a CTE to calculate each customer's delivered order count, then label customers as `Repeat` (2+ delivered orders) or `One-time/No delivered orders`.
+WITH delivered_order AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS delivered_count
+    FROM orders
+    WHERE order_status = 'Delivered'
+    GROUP BY customer_id
+)
+SELECT
+    c.customer_id,
+    c.customer_name,
+    COALESCE(d.delivered_count, 0) AS delivered_count,
+    CASE
+        WHEN COALESCE(d.delivered_count, 0) >= 2 THEN 'Repeat'
+		WHEN COALESCE(d.delivered_count, 0) = 1 THEN 'One-time'
+        ELSE 'No delivered orders'
+    END AS customer_type
+FROM customers AS c
+LEFT JOIN delivered_order AS d
+    ON c.customer_id = d.customer_id
+ORDER BY delivered_count DESC;
+
+
+
