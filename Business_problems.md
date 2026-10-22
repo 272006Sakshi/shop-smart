@@ -13,3 +13,10 @@
 13. Calculate average delivered order value. Count each order once.
 14. Find each city's delivered revenue, highest first.
 15. Show products that have no delivered sales.
+    
+### CTEs
+
+16. Use a CTE to calculate delivered revenue per order, then return orders worth more than ₹5,000.
+17. Use a CTE to calculate monthly delivered revenue.
+18. Use a CTE to calculate revenue per product, then rank products within each category using `DENSE_RANK()` or `ROW_NUMBER()`.
+19. Use a CTE to calculate each customer's delivered order count, then label customers as `Repeat` (2+ delivered orders) or `One-time/No delivered orders`.
